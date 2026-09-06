@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TripNest — Bus, Train & Hotel Booking</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{--primary:#e85d04;--dark:#18212f;--muted:#667085;--light:#f6f8fb;--white:#fff;--border:#e6e9ef;--green:#14804a}
+body{font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--light);color:var(--dark);line-height:1.5}
+button,input,select{font:inherit} button{cursor:pointer;border:0}
+.container{width:min(1180px,92%);margin:auto}
+header{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:25px;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:9px}
+.logo span{color:var(--dark)}
+.navlinks{display:flex;gap:26px;list-style:none}
+.navlinks a{text-decoration:none;color:#475467;font-weight:600;font-size:14px}
+.navlinks a:hover{color:var(--primary)}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.login{background:#fff;border:1px solid var(--border);padding:10px 17px;border-radius:10px;font-weight:700}
+.menu{display:none;background:none;font-size:25px}
+.hero{background:linear-gradient(135deg,#172233 0%,#263a55 100%);padding:64px 0 92px;color:#fff}
+.hero-content{text-align:center}
+.badge{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);padding:7px 13px;border-radius:30px;font-size:12px;font-weight:700;margin-bottom:14px}
+.hero h1{font-size:clamp(32px,5vw,54px);line-height:1.08;margin-bottom:12px}
+.hero h1 span{color:#ff8c42}
+.hero p{color:#d4dbe5;max-width:640px;margin:auto}
+.booking{background:#fff;color:var(--dark);border-radius:18px;padding:10px;max-width:1080px;margin:30px auto -125px;box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.tabs{display:flex;gap:5px;padding:5px;background:#f2f4f7;border-radius:12px;width:max-content}
+.tab{padding:10px 20px;border-radius:9px;background:transparent;font-weight:800;color:#667085}
+.tab.active{background:#fff;color:var(--primary);box-shadow:0 2px 7px #0000000d}
+.form{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;padding:16px 5px 5px}
+.field{border:1px solid var(--border);border-radius:11px;padding:10px 13px}
+.field label{display:block;color:#98a2b3;font-size:11px;font-weight:800;text-transform:uppercase}
+.field input,.field select{width:100%;border:0;outline:0;margin-top:3px;background:transparent;color:var(--dark);font-weight:650}
+.search{background:var(--primary);color:#fff;border-radius:11px;padding:0 23px;font-weight:800}
+.section{padding:70px 0 10px}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px}
+.section-title h2{font-size:26px}
+.section-title p{color:var(--muted);font-size:14px}
+.link{color:var(--primary);font-weight:800;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:15px;padding:18px;box-shadow:0 5px 20px #18212f08}
+.route-card{transition:.2s}
+.route-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px #18212f12}
+.icon{width:42px;height:42px;border-radius:12px;background:#fff2e9;display:grid;place-items:center;font-size:21px;margin-bottom:13px}
+.route{font-weight:800}.small{font-size:13px;color:var(--muted)}
+.price{font-weight:850;margin-top:9px}
+.offers{grid-template-columns:repeat(3,1fr)}
+.offer{min-height:150px;color:#fff;border:0;position:relative;overflow:hidden}
+.offer:nth-child(1){background:linear-gradient(135deg,#d94801,#ff922b)}
+.offer:nth-child(2){background:linear-gradient(135deg,#3b5bdb,#748ffc)}
+.offer:nth-child(3){background:linear-gradient(135deg,#087f5b,#40c057)}
+.offer h3{font-size:20px;margin-bottom:7px}.offer p{font-size:13px;opacity:.9;max-width:270px}
+.code{display:inline-block;background:#fff;color:#333;padding:5px 9px;border-radius:6px;margin-top:14px;font-size:11px;font-weight:900}
+.offer:after{content:"✦";position:absolute;right:-8px;bottom:-30px;font-size:120px;opacity:.1}
+.rewards{background:#18212f;color:#fff;border-radius:18px;padding:28px;display:grid;grid-template-columns:1.3fr 1fr;gap:30px;align-items:center}
+.reward-points{font-size:42px;font-weight:900;color:#ff9a57}
+.progress{height:9px;background:#354255;border-radius:20px;margin:12px 0}.progress div{height:100%;width:68%;background:#ff8c42;border-radius:20px}
+.reward-btn{padding:11px 17px;border-radius:9px;background:#fff;color:#18212f;font-weight:800}
+.feature{display:flex;gap:13px;align-items:flex-start}.feature-icon{font-size:25px}
+.features{grid-template-columns:repeat(4,1fr)}
+.travel-card{padding:0;overflow:hidden}.travel-img{height:145px;background:linear-gradient(135deg,#ced4da,#868e96);display:grid;place-items:center;font-size:42px}.travel-body{padding:15px}
+.app{margin-top:60px;background:#fff;border:1px solid var(--border);border-radius:20px;padding:35px;display:flex;justify-content:space-between;align-items:center;gap:25px}.app h2{font-size:28px}.app p{color:var(--muted);margin-top:6px}.app-btn{background:#18212f;color:#fff;padding:12px 18px;border-radius:9px;font-weight:800}
+footer{margin-top:65px;background:#111a27;color:#aeb7c5;padding:45px 0 20px}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}.footer-logo{color:#fff;font-size:23px;font-weight:850}.footer h4{color:#fff;margin-bottom:12px}.footer a{display:block;text-decoration:none;color:#aeb7c5;font-size:13px;margin:7px 0}.copy{border-top:1px solid #293342;margin-top:30px;padding-top:18px;font-size:12px;text-align:center}
+.toast{position:fixed;bottom:25px;right:25px;background:#18212f;color:#fff;padding:13px 18px;border-radius:10px;box-shadow:0 10px 30px #0003;display:none;z-index:50}
+
+/* Premium portfolio enhancements */
+body{background:#f3f6fa}
+.hero{position:relative;overflow:hidden;padding:70px 0 120px}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:#ffffff0b;pointer-events:none}
+.hero:before{width:420px;height:420px;right:-100px;top:-170px}
+.hero:after{width:300px;height:300px;left:-120px;bottom:-180px}
+.hero-content{position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;margin-bottom:14px;color:#ffd2b5;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.booking{position:relative;z-index:5;margin-top:28px;padding:14px}
+.tabs{background:#eef2f6;border-radius:14px;padding:6px}
+.tab{min-width:115px;transition:.2s}
+.tab.active{color:#d94801}
+.form{padding:17px 5px 5px}
+.field{transition:.2s;background:#fff}
+.field:focus-within{border-color:#ff922b;box-shadow:0 0 0 3px #ff922b18}
+.search{background:linear-gradient(135deg,#e85d04,#f76707);box-shadow:0 8px 18px #e85d0430;transition:.2s}
+.search:hover{transform:translateY(-2px);box-shadow:0 12px 24px #e85d0440}
+.trust-row{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin-top:22px;color:#d7dee8;font-size:12px}
+.trust-row span{display:flex;gap:6px;align-items:center}
+.section{padding-top:76px}
+.section-title h2{letter-spacing:-.02em}
+.card{transition:.22s}
+.route-card,.travel-card,.feature{border-color:#e2e7ee}
+.route-card:hover,.travel-card:hover,.feature:hover{transform:translateY(-5px);box-shadow:0 16px 32px #18212f12}
+.route-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.rating{background:#eaf8f0;color:#14804a;padding:4px 7px;border-radius:6px;font-size:11px;font-weight:900}
+.route-line{display:flex;align-items:center;gap:8px;color:#475467;font-size:13px}
+.dotline{height:1px;flex:1;background:#d9dee6;position:relative}
+.dotline:after{content:"";position:absolute;left:50%;top:-3px;width:7px;height:7px;border-radius:50%;background:#ff922b}
+.offer{min-height:175px;padding:22px}
+.offer-badge{font-size:10px;font-weight:900;letter-spacing:.05em;opacity:.8;text-transform:uppercase}
+.offer h3{font-size:21px;margin:7px 0}
+.coupon-row{display:flex;align-items:center;gap:8px}
+.code{border:1px dashed #ffffffaa;margin-top:12px}
+.copy-btn{margin-top:12px;padding:5px 8px;border-radius:6px;background:#ffffff25;color:#fff;font-size:11px;font-weight:800}
+.rewards{box-shadow:0 18px 40px #18212f18;position:relative;overflow:hidden}
+.rewards:after{content:"✦";position:absolute;right:20px;top:-25px;font-size:160px;color:#fff;opacity:.035}
+.reward-card{background:linear-gradient(135deg,#fff,#f7f9fb);border:1px solid #e5e8ed;border-radius:15px;padding:20px}
+.reward-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.reward-chip{background:#fff2e9;color:#d94801;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:900}
+.progress{overflow:hidden}
+.progress div{background:linear-gradient(90deg,#ff922b,#e85d04)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.stat{background:#ffffff10;border:1px solid #ffffff12;border-radius:11px;padding:11px}
+.stat b{display:block;font-size:17px;color:#fff}.stat span{font-size:10px;color:#aeb7c5}
+.travel-img{background:linear-gradient(135deg,#dce5ef,#aab8c8);position:relative}
+.travel-img:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#ffffff00,#18212f35)}
+.travel-img span{position:relative;z-index:1}
+.section-note{display:flex;align-items:center;gap:7px;color:#667085;font-size:12px}
+.newsletter{margin-top:55px;border-radius:20px;background:linear-gradient(135deg,#fff3ea,#fff);border:1px solid #ffe0cc;padding:25px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.newsletter h3{font-size:22px}.newsletter p{font-size:13px;color:#667085;margin-top:4px}
+.news-form{display:flex;gap:8px}.news-form input{border:1px solid #dddfe5;border-radius:9px;padding:11px 13px;outline:0}.news-form button{background:#e85d04;color:#fff;padding:11px 16px;border-radius:9px;font-weight:800}
+footer{background:#101927}
+@media(max-width:550px){.newsletter{flex-direction:column;align-items:stretch}.news-form{flex-direction:column}.stats{grid-template-columns:1fr 1fr 1fr}.trust-row{gap:13px}.tab{min-width:auto}}
+
+
+/* Functional UI */
+.modal{position:fixed;inset:0;background:#10192799;backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal.show{display:flex}.modal-box{background:#fff;border-radius:18px;width:min(470px,100%);padding:25px;box-shadow:0 25px 70px #0004;position:relative}
+.close{position:absolute;right:18px;top:14px;background:#f2f4f7;border-radius:50%;width:32px;height:32px;font-size:20px}
+.modal-box h2{margin-bottom:5px}.modal-box>p{font-size:13px;color:#667085;margin-bottom:18px}
+.modal-form{display:grid;gap:11px}.modal-form input{border:1px solid #dfe3e8;border-radius:9px;padding:12px;outline:0}.modal-form input:focus{border-color:#ff922b;box-shadow:0 0 0 3px #ff922b18}
+.primary-btn{background:linear-gradient(135deg,#e85d04,#f76707);color:#fff;padding:12px 16px;border-radius:9px;font-weight:850}
+.switch-text{font-size:12px;color:#667085;text-align:center;margin-top:13px}.switch-text button{background:none;color:#e85d04;font-weight:800}
+.user-pill{display:none;align-items:center;gap:7px;background:#fff3ea;color:#c2410c;border:1px solid #ffd8bd;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:800}
+.results{display:none;margin-top:18px;border-top:1px solid #edf0f3;padding-top:16px}.results.show{display:block}.result-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.result-list{display:grid;gap:9px}.result-item{display:flex;justify-content:space-between;align-items:center;border:1px solid #e5e8ed;border-radius:10px;padding:12px}.result-item strong{font-size:13px}.result-item span{font-size:11px;color:#667085;display:block}.mini-btn{background:#18212f;color:#fff;padding:8px 11px;border-radius:7px;font-size:11px;font-weight:800}
+.booking-list{display:none}.booking-list.show{display:block}
+#accountPanel{display:none}
+
+@media(max-width:850px){.navlinks{display:none}.menu{display:block}.grid,.features{grid-template-columns:repeat(2,1fr)}.offers{grid-template-columns:1fr}.form{grid-template-columns:1fr 1fr}.search{height:48px}.rewards{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:550px){.hero{padding:45px 0 80px}.booking{margin-top:25px}.tabs{width:100%;justify-content:space-between}.tab{padding:9px 13px}.form{grid-template-columns:1fr}.grid,.features{grid-template-columns:1fr}.section{padding-top:55px}.section-title{align-items:flex-start;gap:10px}.section-title h2{font-size:22px}.app{flex-direction:column;align-items:flex-start}.footer-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="container nav">
+<div class="logo">🚌 <span>Trip</span>Nest</div>
+<ul class="navlinks">
+<li><a href="#booking">Book</a></li><li><a href="#offers">Offers</a></li><li><a href="#rewards">Rewards</a></li><li><a href="#explore">Explore</a></li>
+</ul>
+<div class="nav-actions"><button class="login" id="loginBtn" onclick="openLogin()">Login</button><div class="user-pill" id="userPill">👤 <span id="userName"></span> <button onclick="logout()" style="background:none;color:#c2410c;font-weight:900">×</button></div><button class="menu">☰</button></div>
+</div>
+</header>
+
+<section class="hero">
+<div class="container hero-content">
+<div class="eyebrow">✦ SMARTER TRAVEL • BETTER JOURNEYS</div>
+<h1>Go places. <span>Make memories.</span></h1>
+<p>One simple platform for buses, trains and stays — with smart deals and rewards built into every journey.</p>
+<div class="trust-row"><span>✓ Verified operators</span><span>✓ Secure payments</span><span>✓ 24/7 travel support</span></div>
+</div>
+</section>
+
+<div class="container" id="booking">
+<div class="booking">
+<div class="tabs">
+<button class="tab active" data-type="Bus">🚌 Buses</button>
+<button class="tab" data-type="Train">🚆 Trains</button>
+<button class="tab" data-type="Hotel">🏨 Hotels</button>
+</div>
+<div class="form">
+<div class="field"><label>From</label><input id="from" placeholder="City or station"></div>
+<div class="field"><label>To</label><input id="to" placeholder="City or station"></div>
+<div class="field"><label>Travel date</label><input type="date" id="date"></div>
+<div class="field"><label>Travellers</label><select><option>1 Traveller</option><option>2 Travellers</option><option>3 Travellers</option><option>4+ Travellers</option></select></div>
+<button class="search" onclick="searchTrip()">Search</button>
+</div>
+</div>
+<div class="results" id="results">
+  <div class="result-head"><div><b id="resultTitle">Available options</b><div class="small" id="resultSub">Choose an option to continue.</div></div><button class="mini-btn" onclick="clearResults()">Clear</button></div>
+  <div class="result-list" id="resultList"></div>
+</div>
+</div>
+
+<section class="section">
+<div class="container">
+<div class="section-title"><div><h2>Popular bus routes</h2><p>Comfortable journeys at prices you'll love.</p></div><span class="link">View all →</span></div>
+<div class="grid">
+<div class="card route-card"><div class="route-top"><div class="icon">🚌</div><span class="rating">★ 4.7</span></div><div class="route-line"><b>Hyderabad</b><span class="dotline"></span><b>Vijayawada</b></div><div class="small">6h • 120+ buses • AC Sleeper</div><div class="price">From ₹499</div></div>
+<div class="card route-card"><div class="route-top"><div class="icon">🚌</div><span class="rating">★ 4.8</span></div><div class="route-line"><b>Bengaluru</b><span class="dotline"></span><b>Chennai</b></div><div class="small">7h • 95+ buses • AC Seater</div><div class="price">From ₹549</div></div>
+<div class="card route-card"><div class="route-top"><div class="icon">🚌</div><span class="rating">★ 4.6</span></div><div class="route-line"><b>Chennai</b><span class="dotline"></span><b>Hyderabad</b></div><div class="small">11h • 80+ buses • Sleeper</div><div class="price">From ₹699</div></div>
+<div class="card route-card"><div class="route-top"><div class="icon">🚌</div><span class="rating">★ 4.7</span></div><div class="route-line"><b>Vijayawada</b><span class="dotline"></span><b>Bengaluru</b></div><div class="small">9h • 70+ buses • AC Sleeper</div><div class="price">From ₹599</div></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="offers">
+<div class="container">
+<div class="section-title"><div><h2>Coupons & special offers 🎁</h2><p>Save more on your next adventure.</p></div></div>
+<div class="grid offers">
+<div class="card offer"><span class="offer-badge">New traveller offer</span><h3>20% OFF your first ride</h3><p>Start your TripNest journey with a special first-booking discount.</p><div class="coupon-row"><span class="code">FIRSTBUS</span><button class="copy-btn" onclick="copyCode('FIRSTBUS')">Copy</button></div></div>
+<div class="card offer"><span class="offer-badge">Weekend special</span><h3>Flat ₹300 OFF</h3><p>Turn your weekend plans into a quick getaway with selected routes.</p><div class="coupon-row"><span class="code">WEEKEND300</span><button class="copy-btn" onclick="copyCode('WEEKEND300')">Copy</button></div></div>
+<div class="card offer"><span class="offer-badge">Stay & earn</span><h3>Extra hotel rewards</h3><p>Book eligible stays and unlock bonus points for your next trip.</p><div class="coupon-row"><span class="code">STAYMORE</span><button class="copy-btn" onclick="copyCode('STAYMORE')">Copy</button></div></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="rewards">
+<div class="container">
+<div class="rewards">
+<div><div class="small" style="color:#aeb7c5">TRIPNEST REWARDS</div><h2>Travel more. Earn more.</h2><p style="color:#aeb7c5;margin-top:6px">Earn points every time you book and redeem them for future savings.</p><div class="reward-points">1,680 <span style="font-size:15px;color:#aeb7c5">points</span></div><div class="progress"><div></div></div><div class="small">320 points to unlock your next ₹100 reward</div><div class="stats"><div class="stat"><b>12</b><span>Trips completed</span></div><div class="stat"><b>₹840</b><span>Total saved</span></div><div class="stat"><b>4.9★</b><span>Trip rating</span></div></div></div>
+<div class="reward-card" style="color:#18212f"><div class="reward-row"><h3>🎉 Your reward wallet</h3><span class="reward-chip">GOLD MEMBER</span></div><p class="small" style="margin:7px 0 12px">Use points on eligible bus, train and hotel bookings.</p><div class="reward-row"><b>1,680 pts</b><span class="small">≈ ₹168 value</span></div><button class="reward-btn" style="margin-top:15px" onclick="showToast('Rewards wallet opened!')">View rewards</button></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="explore">
+<div class="container">
+<div class="section-title"><div><h2>Explore more</h2><p>Plan your complete trip with TripNest.</p></div></div>
+<div class="grid">
+<div class="card travel-card"><div class="travel-img"><span>🚆</span></div><div class="travel-body"><h3>Train tickets</h3><p class="small">Find trains, compare timings and plan your rail journey.</p><button class="link" style="background:none;margin-top:10px" onclick="selectType('Train')">Search trains →</button></div></div>
+<div class="card travel-card"><div class="travel-img"><span>🏨</span></div><div class="travel-body"><h3>Hotels & stays</h3><p class="small">Find comfortable stays for every budget and destination.</p><button class="link" style="background:none;margin-top:10px" onclick="selectType('Hotel')">Find hotels →</button></div></div>
+<div class="card travel-card"><div class="travel-img"><span>📍</span></div><div class="travel-body"><h3>Top destinations</h3><p class="small">Discover popular cities and exciting places to visit.</p><button class="link" style="background:none;margin-top:10px" onclick="showToast('Destinations coming soon!')">Explore places →</button></div></div>
+<div class="card travel-card"><div class="travel-img"><span>🎫</span></div><div class="travel-body"><h3>Travel deals</h3><p class="small">Save with limited-time coupons and member-only offers.</p><button class="link" style="background:none;margin-top:10px" onclick="document.getElementById('offers').scrollIntoView({behavior:'smooth'})">View offers →</button></div></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<div class="section-title"><div><h2>Why travellers choose us</h2></div></div>
+<div class="grid features">
+<div class="card feature"><div class="feature-icon">🔒</div><div><h3>Secure booking</h3><p class="small">Your booking information stays protected.</p></div></div>
+<div class="card feature"><div class="feature-icon">💳</div><div><h3>Easy payments</h3><p class="small">Simple and convenient payment options.</p></div></div>
+<div class="card feature"><div class="feature-icon">↩️</div><div><h3>Easy cancellation</h3><p class="small">Flexible cancellation on selected tickets.</p></div></div>
+<div class="card feature"><div class="feature-icon">🎧</div><div><h3>Travel support</h3><p class="small">We're here whenever you need help.</p></div></div>
+</div>
+</div>
+</section>
+
+<div class="container">
+<div class="app"><div><h2>One app. Every journey. 📱</h2><p>Keep your tickets, rewards and travel plans together in one place.</p></div><button class="app-btn" onclick="showToast('App download demo — coming soon!')">Get the app</button></div>
+</div>
+
+
+<div class="container">
+<div class="newsletter">
+<div><h3>Get the best travel deals ✨</h3><p>Be the first to know about new offers, routes and reward bonuses.</p></div>
+<div class="news-form"><input id="email" type="email" placeholder="Enter your email"><button onclick="subscribe()">Subscribe</button></div>
+</div>
+</div>
+
+<footer>
+<div class="container">
+<div class="footer-grid">
+<div><div class="footer-logo">🚌 TripNest</div><p style="font-size:13px;margin-top:10px;max-width:300px">A portfolio travel platform concept for simple, smart and rewarding journeys.</p></div>
+<div><h4>Travel</h4><a href="#booking">Bus tickets</a><a href="#booking">Train tickets</a><a href="#booking">Hotels</a></div>
+<div><h4>Company</h4><a href="#offers">Offers</a><a href="#rewards">Rewards</a><a href="#explore">Explore</a></div>
+<div><h4>Support</h4><a href="javascript:void(0)" onclick="showToast('Help Center: this portfolio demo is ready for integration with a backend.')">Help Center</a><a href="javascript:void(0)" onclick="showToast('Contact: support@tripnest.demo')">Contact us</a><a href="javascript:void(0)" onclick="showToast('Terms & Privacy page can be connected to your backend later.')">Terms & Privacy</a></div>
+</div>
+<div class="copy">© 2026 TripNest • Portfolio Project</div>
+</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script>
+const tabs=document.querySelectorAll('.tab');
+tabs.forEach(tab=>tab.addEventListener('click',()=>{tabs.forEach(t=>t.classList.remove('active'));tab.classList.add('active'); updateFields(tab.dataset.type)}));
+function updateFields(type){
+ document.getElementById('from').placeholder=type==='Hotel'?'City or hotel':'City or station';
+ document.getElementById('to').placeholder=type==='Hotel'?'Optional':'City or station';
+}
+function selectType(type){
+ document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+ tabs.forEach(t=>{t.classList.toggle('active',t.dataset.type===type)});
+ updateFields(type);
+}
+
+let authMode='login';
+
+function openLogin(){
+  document.getElementById('loginModal').classList.add('show');
+}
+function closeLogin(){
+  document.getElementById('loginModal').classList.remove('show');
+}
+function toggleAuth(){
+  authMode=authMode==='login'?'signup':'login';
+  const signup=authMode==='signup';
+  document.getElementById('authTitle').textContent=signup?'Create your TripNest account':'Welcome to TripNest';
+  document.getElementById('authSubtitle').textContent=signup?'Save trips, collect rewards and manage bookings.':'Sign in to manage bookings, rewards and saved trips.';
+  document.getElementById('authName').style.display=signup?'block':'none';
+  document.getElementById('authName').required=signup;
+  document.getElementById('authSubmit').textContent=signup?'Create account':'Login';
+  document.getElementById('switchLabel').textContent=signup?'Already have an account?':'New to TripNest?';
+  document.getElementById('switchBtn').textContent=signup?'Login':'Create account';
+}
+function handleAuth(e){
+  e.preventDefault();
+  const name=document.getElementById('authName').value.trim();
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  if(authMode==='signup'){
+    localStorage.setItem('tripnestUser',JSON.stringify({name:name||email.split('@')[0],email,password}));
+    showToast('Account created successfully!');
+  }else{
+    const saved=JSON.parse(localStorage.getItem('tripnestUser')||'null');
+    if(saved && (saved.email!==email || saved.password!==password)){
+      showToast('Email or password does not match this demo account.'); return;
+    }
+    localStorage.setItem('tripnestUser',JSON.stringify({name:(saved&&saved.name)||email.split('@')[0],email,password}));
+    showToast('Logged in successfully!');
+  }
+  updateUser();
+  closeLogin();
+  e.target.reset();
+}
+function updateUser(){
+  const user=JSON.parse(localStorage.getItem('tripnestUser')||'null');
+  const pill=document.getElementById('userPill'), btn=document.getElementById('loginBtn');
+  if(user){pill.style.display='flex';document.getElementById('userName').textContent=user.name;btn.style.display='none'}
+  else{pill.style.display='none';btn.style.display='block'}
+}
+function logout(){
+  localStorage.removeItem('tripnestUser'); updateUser(); showToast('You have been logged out.');
+}
+function searchTrip(){
+  const active=document.querySelector('.tab.active').dataset.type;
+  const from=document.getElementById('from').value.trim();
+  const to=document.getElementById('to').value.trim();
+  const date=document.getElementById('date').value;
+  if(!from){showToast('Please enter your starting location.');return}
+  if(active!=='Hotel' && !to){showToast('Please enter your destination.');return}
+  if(!date){showToast('Please choose a travel date.');return}
+  const title=active==='Bus'?'Buses':active==='Train'?'Trains':'Hotels';
+  document.getElementById('resultTitle').textContent=`${title} available`;
+  document.getElementById('resultSub').textContent=`${from}${to?' → '+to:''} • ${date}`;
+  const names=active==='Bus'
+    ?['SwiftLine Express','CityRide Travels','OrangeRoute Sleeper']
+    :active==='Train'
+    ?['InterCity Express','SuperFast Connect','CityLink Express']
+    :['NestStay Premium','Urban Comfort Hotel','GreenView Suites'];
+  const prices=active==='Bus'?['₹499','₹649','₹799']:active==='Train'?['₹320','₹540','₹760']:['₹1,899/night','₹2,399/night','₹2,999/night'];
+  document.getElementById('resultList').innerHTML=names.map((n,i)=>`
+    <div class="result-item">
+      <div><strong>${n}</strong><span>${active==='Hotel'?'★ 4.'+(8-i)+' • Free Wi-Fi • Breakfast':(i+1)+' available options • ${active} • ${i===0?'Best value':'Flexible booking'}</span></div>
+      <div style="text-align:right"><strong>${prices[i]}</strong><br><button class="mini-btn" onclick="bookNow('${n.replace(/'/g,"\\'")}')">Book</button></div>
+    </div>`).join('');
+  document.getElementById('results').classList.add('show');
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function bookNow(name){
+  const user=JSON.parse(localStorage.getItem('tripnestUser')||'null');
+  if(!user){openLogin();showToast('Please login to continue booking.');return}
+  const bookings=JSON.parse(localStorage.getItem('tripnestBookings')||'[]');
+  bookings.push({name,date:new Date().toLocaleDateString(),status:'Confirmed'});
+  localStorage.setItem('tripnestBookings',JSON.stringify(bookings));
+  showToast(`Booking confirmed for ${name}!`);
+}
+function clearResults(){
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('resultList').innerHTML='';
+}
+
+function showToast(message){
+ const toast=document.getElementById('toast');toast.textContent=message;toast.style.display='block';
+ clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.style.display='none',2800);
+}
+document.getElementById('date').value=new Date().toISOString().split('T')[0];
+updateUser();
+</script>
+
+<div class="modal" id="loginModal" onclick="if(event.target===this)closeLogin()">
+ <div class="modal-box">
+  <button class="close" onclick="closeLogin()">×</button>
+  <h2 id="authTitle">Welcome to TripNest</h2>
+  <p id="authSubtitle">Sign in to manage bookings, rewards and saved trips.</p>
+  <form class="modal-form" onsubmit="handleAuth(event)">
+   <input id="authName" placeholder="Full name" style="display:none">
+   <input id="authEmail" type="email" placeholder="Email address" required>
+   <input id="authPassword" type="password" placeholder="Password" minlength="4" required>
+   <button class="primary-btn" id="authSubmit">Login</button>
+  </form>
+  <div class="switch-text"><span id="switchLabel">New to TripNest?</span> <button type="button" onclick="toggleAuth()" id="switchBtn">Create account</button></div>
+ </div>
+</div>
+</body>
+</html>
